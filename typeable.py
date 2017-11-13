@@ -97,7 +97,7 @@ def generate_words(scores, difficulty, numWords):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('-w', dest='numWords', type=int, default=5, help='number of words per passphrase')
-  parser.add_argument('-d', dest='maxDifficulty', type=int, default=10, help='maximum typing difficulty')
+  parser.add_argument('-d', dest='maxDifficulty', type=int, default=2, help='maximum typing difficulty')
   parser.add_argument('-n', dest='numResults', type=int, default=5, help='number of passphrases to generate')
   parser.add_argument('--dump', dest='dump', help='dump words and their scores instead of generating passphrases', action='store_true')
 
