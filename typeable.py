@@ -45,6 +45,7 @@ def typeability(str):
   score = 0
   prevFinger = None
   fingers = create_fingers()
+  penalty = 0
 
   for char in str:
     c = char.lower()
@@ -57,7 +58,7 @@ def typeability(str):
       if prevFinger != None:
         if prevFinger.hand == finger.hand:
           # same hand penalty
-          score += 1
+          penalty += 1
 
         # prev finger moves back to home row
         score += key_dist(prevFinger.position, prevFinger.home_key)
@@ -68,7 +69,7 @@ def typeability(str):
       finger.move(c)
       prevFinger = finger
 
-  return score
+  return score / len(str) + penalty
 
 def create_fingers():
   LeftPinky = Finger(list('qaz'), 'a', Hand.Left)
@@ -98,6 +99,7 @@ if __name__ == '__main__':
   parser.add_argument('-w', dest='numWords', type=int, default=5, help='number of words per passphrase')
   parser.add_argument('-d', dest='maxDifficulty', type=int, default=10, help='maximum typing difficulty')
   parser.add_argument('-n', dest='numResults', type=int, default=5, help='number of passphrases to generate')
+  parser.add_argument('--dump', dest='dump', help='dump words and their scores instead of generating passphrases', action='store_true')
 
   args = parser.parse_args()
 
@@ -105,6 +107,12 @@ if __name__ == '__main__':
   for line in sys.stdin:
     word = line.strip().lower()
     scores[word] = typeability(word)
+
+  if args.dump:
+    # sortedWords =
+    for w in sorted(scores.items(), key=lambda x:x[1]):
+      print(str(round(w[1], 2)) + '\t' + w[0])
+    sys.exit()
 
   for i in range(args.numResults):
     words = generate_words(scores, args.maxDifficulty, args.numWords)
