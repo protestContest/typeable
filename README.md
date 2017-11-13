@@ -7,13 +7,19 @@ Currently a word's "typeability" is determined by the distance it takes to move 
 ## Usage
 
 ```
-usage: typeable.py [-h] [-w NUMWORDS] [-d MAXDIFFICULTY] [-n NUMRESULTS]
+usage: Generates easy-to-type passphrases from words given in STDIN
+       [-h] [-w NUMWORDS] [-d MAXDIFFICULTY] [-n NUMRESULTS] [-t TEST]
+       [--dump]
 
 optional arguments:
   -h, --help        show this help message and exit
-  -w NUMWORDS       number of words per passphrase (default: 5)
-  -d MAXDIFFICULTY  maximum typing difficulty (default: 10)
-  -n NUMRESULTS     number of passphrases to generate (default: 5)
+  -w NUMWORDS       number of words per passphrase
+  -d MAXDIFFICULTY  maximum typing difficulty
+  -n NUMRESULTS     number of passphrases to generate
+  -t TEST           print typeability of a single word instead of generating
+                    passphrases
+  --dump            dump words and their scores instead of generating
+                    passphrases
 ```
 
 ## Future Work
