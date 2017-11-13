@@ -53,7 +53,7 @@ def typeability(str):
 
     if finger == prevFinger:
       # same finger moves to new key
-      score += key_dist(finger.position, c)
+      score += 2*key_dist(finger.position, c)
     else:
       if prevFinger != None:
         if prevFinger.hand == finger.hand:
@@ -97,11 +97,17 @@ def generate_words(scores, difficulty, numWords):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('-w', dest='numWords', type=int, default=5, help='number of words per passphrase')
-  parser.add_argument('-d', dest='maxDifficulty', type=int, default=2, help='maximum typing difficulty')
+  parser.add_argument('-d', dest='maxDifficulty', type=float, default=1, help='maximum typing difficulty')
   parser.add_argument('-n', dest='numResults', type=int, default=5, help='number of passphrases to generate')
+  parser.add_argument('-t', dest='test', help='print typeability of a single word instead of generating passphrases')
   parser.add_argument('--dump', dest='dump', help='dump words and their scores instead of generating passphrases', action='store_true')
 
   args = parser.parse_args()
+
+
+  if args.test:
+    print(typeability(args.test))
+    sys.exit()
 
   scores = dict()
   for line in sys.stdin:
