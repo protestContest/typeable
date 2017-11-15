@@ -32,6 +32,8 @@
       }
       #results {
         width: 100%;
+        height: 200px;
+        overflow-y: auto;
       }
       .result {
         display: flex;
@@ -55,7 +57,7 @@
         tplResult.content.querySelector('.value').textContent = result;
 
         const clone = document.importNode(tplResult.content, true);
-        boxResults.appendChild(clone);
+        boxResults.insertBefore(clone, boxResults.firstChild);
       }
 
       function checkWord(event) {
