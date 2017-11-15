@@ -85,13 +85,16 @@ def create_fingers():
 def generate_words(scores, difficulty, numWords):
   n = 0
   words = []
+  hardestScore = 0
 
   useableWords = {k: v for k, v in scores.items() if v <= difficulty}
 
   for i in range(numWords):
-    words.append(random.choice(list(useableWords.keys())))
+    word = random.choice(list(useableWords.keys()))
+    hardestScore = max(hardestScore, useableWords[word])
+    words.append(word)
 
-  return words
+  return words, hardestScore
 
 
 if __name__ == '__main__':
@@ -112,6 +115,8 @@ if __name__ == '__main__':
   scores = dict()
   for line in sys.stdin:
     word = line.strip().lower()
+    if len(word) < 4:
+      continue
     scores[word] = typeability(word)
 
   if args.dump:
@@ -121,5 +126,5 @@ if __name__ == '__main__':
     sys.exit()
 
   for i in range(args.numResults):
-    words = generate_words(scores, args.maxDifficulty, args.numWords)
-    print(' '.join(words))
+    words, score = generate_words(scores, args.maxDifficulty, args.numWords)
+    print(' '.join(words) + ' ' + str(round(score, 2)))
