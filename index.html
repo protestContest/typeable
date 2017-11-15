@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Test</title>
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fafafa;
+      }
+      main {
+        width: 50%;
+        padding: 2em;
+        background: lightblue;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+      }
+      input {
+        margin: 1em;
+      }
+      #results {
+        width: 100%;
+      }
+      .result {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+    <script>
+      const results = {};
+      let words = [];
+      let wordStartTs = null;
+      let keyQueue = [];
+      let typedWord = '';
+
+      function showResults(word, results) {
+        console.log(results);
+        const result = Math.round(results.reduce((maxResult, result) => Math.max(maxResult, result.value), 0));
+
+        const boxResults = document.getElementById('results');
+        const tplResult = document.getElementById('tplResult');
+        tplResult.content.querySelector('.name').textContent = word;
+        tplResult.content.querySelector('.value').textContent = result;
+
+        const clone = document.importNode(tplResult.content, true);
+        boxResults.appendChild(clone);
+      }
+
+      function checkWord(event) {
+        if (event.target.value.length === 0) {
+          return;
+        }
+
+        const currentWord = document.getElementById('lblWord').innerText;
+        typedWord += event.key;
+        const lastChar = event.key;
+
+        if (currentWord.substring(0, typedWord.length) === typedWord) {
+          if (!results[currentWord]) {
+            results[currentWord] = [];
+          }
+
+          if (results[currentWord].length === 0) {
+            wordStartTs = event.timeStamp;
+            results[currentWord].push({
+              key: lastChar,
+              value: 0
+            });
+          } else {
+            results[currentWord].push({
+              key: lastChar,
+              value: event.timeStamp - wordStartTs
+            });
+          }
+
+          if (typedWord === currentWord) {
+            console.log(results[typedWord]);
+            showResults(typedWord, results[typedWord]);
+            if (words.length === 0) {
+              iptWord.value = '';
+              iptWord.disabled = true;
+              lblWord.innerText = '~ Complete ~';
+            } else {
+              setNewWord(currentWord);
+            }
+          }
+        } else {
+          // mistyped
+          results[currentWord] = [];
+          event.target.value = '';
+          typedWord = '';
+        }
+      }
+
+      function setNewWord(previousWord) {
+        if (previousWord) {
+          words.splice(words.indexOf(previousWord), 1);
+        }
+
+        const newWord = words[Math.floor(Math.random()*words.length)];
+
+        const iptWord = document.getElementById('iptWord');
+        const lblWord = document.getElementById('lblWord');
+        lblWord.innerText = newWord;
+        iptWord.value = '';
+        typedWord = '';
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const iptWord = document.getElementById('iptWord');
+        const lblWord = document.getElementById('lblWord');
+        const iptFile = document.getElementById('iptFile');
+
+        iptFile.addEventListener('change', event => {
+          const file = event.target.files[0]
+          if (file) {
+            const fileReader = new FileReader();
+            fileReader.onload = loadEvent => {
+              const fileContents = loadEvent.target.result;
+              words = fileContents.split('\n').filter(word => word.length > 3).map(word => word.toLowerCase());
+              const iptWord = document.getElementById('iptWord');
+              iptWord.disabled = false;
+              iptWord.focus();
+              setNewWord();
+            };
+            fileReader.readAsText(file);
+          }
+        });
+
+        let currentWord = 'Select a word file';
+        lblWord.innerText = currentWord;
+        iptWord.value = '';
+
+        iptWord.addEventListener('keyup', checkWord);
+
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1 id='lblWord'></h1>
+      <input id='iptWord' autofocus />
+      <input type='file' id='iptFile' accept='text/plain' />
+      <div id='results'>
+        <template id='tplResult'>
+          <div class='result'>
+            <div class='name'></div>
+            <div class='value'></div>
+          </div>
+        </template>
+      </div>
+    </main>
+  </body>
+</html>
