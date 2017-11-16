@@ -4,6 +4,9 @@
     <meta charset='utf-8' />
     <title>Typeability</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body, html {
         margin: 0;
         padding: 0;
@@ -14,7 +17,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         background: #fafafa;
       }
       main {
@@ -31,8 +33,19 @@
       section {
         max-width: 80ch;
       }
+      h1 {
+        margin: 0;
+      }
       input {
-        margin: 1em;
+        margin: 50px;
+      }
+      #iptWord {
+        font-size: 1.8em;
+        background: #daf6ff;
+        border: none;
+        outline: none;
+        text-align: center;
+        padding: 0.2em;
       }
       #results {
         width: 100%;
@@ -47,6 +60,7 @@
       }
     </style>
     <script>
+      const sessionId = Math.random().toString(36).substring(2);
       const results = {};
       let words = [];
       let wordStartTs = null;
@@ -95,6 +109,7 @@
 
           if (typedWord === currentWord) {
             console.log(results[typedWord]);
+            sendResult(typedWord, results[typedWord]);
             showResults(typedWord, results[typedWord]);
             if (words.length === 0) {
               iptWord.value = '';
@@ -124,6 +139,17 @@
         lblWord.innerText = newWord;
         iptWord.value = '';
         typedWord = '';
+      }
+
+      function sendResult(word, timing) {
+        fetch(window.location, {
+          method: 'POST',
+          body: JSON.stringify({
+            sessionId,
+            word,
+            timing
+          })
+        });
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -171,8 +197,15 @@
       </div>
     </main>
     <section id='description'>
+      <h2>Instructions</h2>
+      <ol>
+        <li>Upload a word list file, which has one word per line. A good word list can be downloaded <a target='_blank' href='https://s3-us-west-2.amazonaws.com/typeability/web2.txt'>here</a>.</li>
+        <li>Type each word presented as quickly as possible, without making mistakes. If you make a mistake, you will have to start the word over.</li>
+        <li>The longest time between keystrokes (in milliseconds) is recorded below. Try to keep scores as low as possible!</li>
+      </ol>
       <p>This tool chooses random words from a word file, and measures the time it takes to type each character. The goal is to generate data about the difficulty to type words based on their character positions on the keyboard.</p>
       <p>Select a word list file, which should have one word per line. Then, type each word that appears above. If you make a mistake, type the word again. Once you type a word without errors, the longest keystroke time is recorded in the results box. The full dataset of all keystroke timings is stored in the global Javascript variable "results".</p>
+      <p>Results are sent and stored, anonymously, to help research word typeability. By using this site, you consent to this transmission and storage.</p>
     </section>
   </body>
 </html>
