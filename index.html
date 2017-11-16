@@ -47,6 +47,9 @@
         text-align: center;
         padding: 0.2em;
       }
+      #bestscore {
+        font-weight: bold;
+      }
       #results {
         width: 100%;
         height: 200px;
@@ -66,10 +69,10 @@
       let wordStartTs = null;
       let keyQueue = [];
       let typedWord = '';
+      let bestScore = null;
 
       function showResults(word, results) {
-        const result = Math.round(results.reduce((maxResult, result, i, results) =>
-          (i === 0) ? 0 : Math.max(maxResult, result.value - results[i-1].value), 0));
+        const result = getLongestTiming(results);
 
         const boxResults = document.getElementById('results');
         const tplResult = document.getElementById('tplResult');
@@ -78,6 +81,11 @@
 
         const clone = document.importNode(tplResult.content, true);
         boxResults.insertBefore(clone, boxResults.firstChild);
+      }
+
+      function getLongestTiming(results) {
+        return Math.round(results.reduce((maxResult, result, i, results) =>
+          (i === 0) ? 0 : Math.max(maxResult, result.value - results[i-1].value), 0));
       }
 
       function checkWord(event) {
@@ -116,6 +124,7 @@
               iptWord.disabled = true;
               lblWord.innerText = '~ Complete ~';
             } else {
+              updateScore(currentWord);
               setNewWord(currentWord);
             }
           }
@@ -125,6 +134,16 @@
           event.target.value = '';
           typedWord = '';
         }
+      }
+
+      function updateScore(word) {
+        if (bestScore === null) {
+          bestScore = getLongestTiming(results[word]);
+        } else {
+          bestScore = Math.min(bestScore, getLongestTiming(results[word]));
+        }
+        const scoreBox = document.getElementById('bestscore');
+        scoreBox.innerText = `Best score: ${bestScore}`;
       }
 
       function setNewWord(previousWord) {
@@ -187,6 +206,7 @@
       <h1 id='lblWord'></h1>
       <input id='iptWord' disabled />
       <input type='file' id='iptFile' accept='text/plain' />
+      <div id='bestscore'></div>
       <div id='results'>
         <template id='tplResult'>
           <div class='result'>
