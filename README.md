@@ -22,6 +22,10 @@ optional arguments:
                     passphrases
 ```
 
+## Data Acquisition
+
+The included HTML file can accept a word list and record timings of keystrokes for each word. This has been deployed [here](https://bxhrwayepf.execute-api.us-west-2.amazonaws.com/prod) to facilitate gathering of data, which will be used to inform the algorithm used here.
+
 ## Future Work
 
 - Improve distance function, ideally from empirically determined data
